@@ -1,0 +1,12 @@
+# k8s/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: food-delivery
+data:
+  mongodb-uri: mongodb://mongodb:27017/fooddb
+  api-url: "http://api-gateway"
+  email-host: "smtp.ethereal.email"
+  email-port: "587"
+  email-secure: "false"
