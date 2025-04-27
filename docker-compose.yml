@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb://mongodb:27017/paymentdb
+      - JWT_SECRET=your_jwt_secret_key
+      - STRIPE_SECRET_KEY=your_stripe_test_key
+      - PAYHERE_MERCHANT_ID=your_payhere_merchant_id
+      - PAYHERE_SECRET=your_payhere_secret
+      - NODE_ENV=development
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+    volumes:
+      - ./payment-service:/usr/src/app
+      - /usr/src/app/node_modules
+
+  payment-frontend:
+    build: ./payment-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - payment-service
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
